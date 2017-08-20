@@ -1,0 +1,12 @@
+---
+- hosts: all
+  gather_facts: no
+  become: true
+
+  tasks:
+
+    - name: install python 2
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal && exit 80)
+      register: result
+      failed_when: "result.rc != 0 and result.rc != 80"
+      changed_when: "result.rc == 80"

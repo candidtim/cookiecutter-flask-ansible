@@ -1,0 +1,8 @@
+{
+  "application_name": "Your Application",
+  "package_name": "yourapplication",
+  "_copy_without_render": [
+    "*.yml",
+    "*roles"
+  ]
+}

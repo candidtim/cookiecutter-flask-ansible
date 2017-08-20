@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/xenial64"
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  config.vm.provision "ansible" do |bootstrap|
+      bootstrap.playbook = "bootstrap.yml"
+  end
+
+  config.vm.provision "ansible" do |deploy|
+      deploy.playbook = "playbook.yml"
+      deploy.host_vars = {
+        "default" => {
+          "app_name" => "{{ cookiecutter.package_name }}",
+          "app_source_dir" => "../{{ cookiecutter.package_name }}/",
+          "server_host" => "{{ cookiecutter.package_name }}-test"
+        }
+      }
+  end
+
+end

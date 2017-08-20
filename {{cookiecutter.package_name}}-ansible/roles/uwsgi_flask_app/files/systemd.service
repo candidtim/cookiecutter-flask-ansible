@@ -1,0 +1,19 @@
+[Unit]
+Description={{ app_name }} uWSGI
+After=syslog.target
+
+[Service]
+User={{ app_user }}
+WorkingDirectory={{ app_root_dir }}
+Environment="{{ app_name.upper() }}_SETTINGS={{ app_root_dir }}/settings.cfg"
+ExecStart={{ app_venv_dir }}/bin/uwsgi --socket 127.0.0.1:3031 --module {{ app_name }} --callable app --processes 4 --threads 2 --stats 127.0.0.1:9191
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -INT $MAINPID
+Restart=always
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target

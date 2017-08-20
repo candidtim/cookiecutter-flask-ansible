@@ -1,0 +1,8 @@
+---
+- name: reload service
+  shell: systemctl daemon-reload
+
+- name: restart service
+  service:
+    name: "{{ app_name }}.service"
+    state: restarted

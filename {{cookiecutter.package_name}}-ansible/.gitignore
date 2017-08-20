@@ -1,0 +1,4 @@
+.vagrant/
+inventory.ini
+*.retry
+*.log

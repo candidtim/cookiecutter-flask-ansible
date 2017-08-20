@@ -1,0 +1,75 @@
+---
+- name: install packages
+  apt: name={{ item }} state=latest
+  with_items:
+    - python3
+    - python3-dev
+    - build-essential
+    - python-virtualenv
+
+- name: create root deployment directory
+  file:
+    path: "{{ app_root_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "u=rwx,g=,o="
+
+- name: get sdist name
+  local_action: shell python {{ app_source_dir }}/setup.py --fullname
+  become: false
+  changed_when: false
+  register: sdist_name
+
+- name: deliver sdist
+  copy:
+    src: "{{ app_source_dir }}/dist/{{ sdist_name.stdout }}.tar.gz"
+    dest: "{{ dist_delivery_dir }}/{{ sdist_name.stdout }}.tar.gz"
+  register: deliver_result
+  notify: restart service
+
+- name: install sdist
+  pip:
+    virtualenv: "{{ app_venv_dir }}"
+    virtualenv_python: python3
+    name: file://{{ dist_delivery_dir }}/{{ sdist_name.stdout }}.tar.gz
+    state: latest
+  become_user: "{{ app_user }}"
+  when: deliver_result.changed
+
+- name: install uwsgi
+  pip:
+    virtualenv: "{{ app_venv_dir }}"
+    virtualenv_python: python3
+    name: uwsgi
+    state: latest
+  become_user: "{{ app_user }}"
+  notify: restart service
+
+- name: create config file
+  template:
+    src: files/settings.cfg
+    dest: "{{ app_root_dir }}/settings.cfg"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "u=r,g=r,o="
+  notify: restart service
+
+- name: create service
+  template:
+    src: files/systemd.service
+    dest: /etc/systemd/system/{{ app_name }}.service
+    mode: "u=r,g=r,o=r"
+    owner: root
+    group: root
+  notify:
+    - reload service
+    - restart service
+
+- name: create log dir
+  file:
+    path: "{{ log_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "u=rwx,g=rx,o=rx"

@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: true
+
+  vars:
+
+    # mandatory vars to supply:
+    # app_name: yourapplication
+    # app_source_dir: ../path/to/source (directory with setup.py file)
+    # server_host: example.com
+
+    # other vars can be overriden, but have sensible defaults:
+    user_nginx: nginx
+    user_uwsgi: "{{ app_name }}"
+
+  pre_tasks:
+
+    - name: create nginx user
+      user: name={{ user_nginx }} createhome=no shell=/bin/false
+
+    - name: create uwsgi user
+      user: name={{ user_uwsgi }} createhome=no shell=/bin/false
+
+  roles:
+
+    - role: jdauphant.nginx
+      nginx_user: "{{ user_nginx }}"
+      nginx_sites:
+        "{{ app_name }}":
+          - listen 80
+          - server_name "{{ server_host }}"
+          - root "/var/www/{{ app_name }}"
+          - location / {
+              include uwsgi_params;
+              uwsgi_pass 127.0.0.1:3031;
+            }
+
+    - role: uwsgi_flask_app
+      app_user: "{{ user_uwsgi }}"

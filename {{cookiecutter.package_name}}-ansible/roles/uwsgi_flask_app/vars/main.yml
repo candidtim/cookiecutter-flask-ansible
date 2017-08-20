@@ -1,0 +1,5 @@
+---
+app_root_dir: "/opt/{{ app_name }}"
+app_venv_dir: "{{ app_root_dir }}/venv"
+log_dir: "/var/log/{{ app_name }}"
+dist_delivery_dir: "/tmp"
