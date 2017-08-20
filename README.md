@@ -23,9 +23,9 @@ configuration:
 
 And open deployed application at [http://127.0.0.1:8080/](http://127.0.0.1:8080/)
 
-When ready, deploy to the server with:
+When ready, configure inventory file and deploy to the server with:
 
-  ansible-playbook playbook.yml -i inventory.ini
+    ansible-playbook playbook.yml -i inventory.ini
 
 
 ## Provided configuration
