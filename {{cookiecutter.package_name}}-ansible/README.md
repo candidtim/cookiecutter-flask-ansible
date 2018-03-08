@@ -20,7 +20,7 @@ This is an Ansible playbook accompanying {{cookiecutter.application_name}}. It p
 
  - [Ansible](http://docs.ansible.com/ansible/latest/intro_installation.html): `sudo pip install ansible`
 
- - reuqired roles, install with `ansible-galaxy install -r requirements.yml`
+ - required roles, install with `ansible-galaxy install -r requirements.yml`
 
  - to test the playbook, [Vagrant](https://www.vagrantup.com/) and [Virtualox](https://www.virtualbox.org/):
    `sudo apt install vagrant virtualbox`
